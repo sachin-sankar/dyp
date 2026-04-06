@@ -1,16 +1,12 @@
-// cmd/myapp/main.go
-package main
+package utils
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path"
-
-	"github.com/sachin-sankar/dyp/internal/parser"
 )
 
-func listPromptFiles() []string {
+func ListPromptFiles() []string {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal("Unable to find user HOME directory")
@@ -25,11 +21,4 @@ func listPromptFiles() []string {
 		resultPromptFiles = append(resultPromptFiles, path.Join(promptsLocation, promptFile.Name()))
 	}
 	return resultPromptFiles
-}
-
-func main() {
-	prompt := (parser.ParsePromptFile(listPromptFiles()[0]))
-	for _, i := range prompt.Vars {
-		fmt.Println(i)
-	}
 }
