@@ -10,6 +10,7 @@ import (
 type Prompt struct {
 	Title string
 	Vars  []string
+	Body  string
 }
 
 func ParsePromptFile(promptFilePath string) Prompt {
@@ -19,6 +20,9 @@ func ParsePromptFile(promptFilePath string) Prompt {
 	}
 	source := string(data)
 	parts := strings.Split(source, "---")
+	if len(parts) != 2 {
+		log.Fatal("Invalid Prompt file" + promptFilePath)
+	}
 	title := parts[0]
 	var vars []string
 	re := regexp.MustCompile(`\{\{(.+?)\}\}`)
@@ -26,6 +30,6 @@ func ParsePromptFile(promptFilePath string) Prompt {
 	for _, match := range matches {
 		vars = append(vars, match[1])
 	}
-	prompt := Prompt{title, vars}
+	prompt := Prompt{title, vars, parts[1]}
 	return prompt
 }

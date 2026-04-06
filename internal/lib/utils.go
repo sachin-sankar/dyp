@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"path"
+
+	"github.com/sachin-sankar/dyp/internal/parser"
 )
 
 func ListPromptFiles() []string {
@@ -21,4 +23,15 @@ func ListPromptFiles() []string {
 		resultPromptFiles = append(resultPromptFiles, path.Join(promptsLocation, promptFile.Name()))
 	}
 	return resultPromptFiles
+}
+
+func ListPrompts() []parser.Prompt {
+	var result []parser.Prompt
+
+	for _, promptFile := range ListPromptFiles() {
+		filePrompt := parser.ParsePromptFile(promptFile)
+		result = append(result, filePrompt)
+	}
+
+	return result
 }
