@@ -6,14 +6,9 @@ import (
 	"log"
 	"os"
 	"path"
-	"regexp"
-	"strings"
-)
 
-type Prompt struct {
-	title string
-	vars  []string
-}
+	"github.com/sachin-sankar/dyp/internal/parser"
+)
 
 func listPromptFiles() []string {
 	home, err := os.UserHomeDir()
@@ -32,27 +27,9 @@ func listPromptFiles() []string {
 	return resultPromptFiles
 }
 
-func parsePromptFile(promptFilePath string) Prompt {
-	data, err := os.ReadFile(promptFilePath)
-	if err != nil {
-		log.Fatal("Unable to read file " + promptFilePath)
-	}
-	source := string(data)
-	parts := strings.Split(source, "---")
-	title := parts[0]
-	var vars []string
-	re := regexp.MustCompile(`\{\{(.+?)\}\}`)
-	matches := re.FindAllStringSubmatch(parts[1], -1)
-	for _, match := range matches {
-		vars = append(vars, match[1])
-	}
-	prompt := Prompt{title, vars}
-	return prompt
-}
-
 func main() {
-	prompt := (parsePromptFile(listPromptFiles()[0]))
-	for _, i := range prompt.vars {
+	prompt := (parser.ParsePromptFile(listPromptFiles()[0]))
+	for _, i := range prompt.Vars {
 		fmt.Println(i)
 	}
 }
