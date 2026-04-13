@@ -1,19 +1,13 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
-	"strings"
 
 	huh "charm.land/huh/v2"
+	"github.com/sachin-sankar/dyp/internal/core"
 	utils "github.com/sachin-sankar/dyp/internal/lib"
 	"github.com/spf13/cobra"
 )
-
-type answer struct {
-	question string
-	answer   string
-}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -29,19 +23,8 @@ var rootCmd = &cobra.Command{
 		huh.NewSelect[int]().Title("Choose a Prompt to Render").Options(options...).Value(&choosen).Run()
 
 		choosenPrompt := prompts[choosen]
-		var answers []answer
-		var currentAnswer string
-		for _, variable := range choosenPrompt.Vars {
-			huh.NewText().
-				Title(variable).
-				Value(&currentAnswer).Run()
-			answers = append(answers, answer{variable, currentAnswer})
-		}
-		rendered := choosenPrompt.Body
-		for _, filledAnswer := range answers {
-			rendered = strings.Replace(rendered, "{{"+filledAnswer.question+"}}", filledAnswer.answer, 1)
-		}
-		fmt.Print(rendered)
+
+		core.RenderPrompt(choosenPrompt)
 	},
 }
 

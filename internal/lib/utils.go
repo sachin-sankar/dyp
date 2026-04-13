@@ -9,11 +9,7 @@ import (
 )
 
 func ListPromptFiles() []string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal("Unable to find user HOME directory")
-	}
-	promptsLocation := path.Join(home, ".prompts")
+	promptsLocation := GetPromptsDirectory()
 	promptFiles, readError := os.ReadDir(promptsLocation)
 	if readError != nil {
 		log.Fatal("Unable to read .prompts directory")
@@ -34,4 +30,13 @@ func ListPrompts() []parser.Prompt {
 	}
 
 	return result
+}
+func GetPromptsDirectory() string {
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal("Unable to find user HOME directory")
+	}
+	promptsLocation := path.Join(home, ".prompts")
+	return promptsLocation
 }
