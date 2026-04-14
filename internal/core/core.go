@@ -26,10 +26,12 @@ func RenderPrompt(prompt parser.Prompt) {
 				Title(variable.Question).
 				Value(&currentAnswer).Run()
 			answers = append(answers, answer{variable.Match, currentAnswer})
+			currentAnswer = ""
 
 		case parser.InputField:
 			huh.NewInput().Title(variable.Question).Value(&currentAnswer).Run()
 			answers = append(answers, answer{variable.Match, currentAnswer})
+			currentAnswer = ""
 
 		case parser.SelectField:
 			re := regexp.MustCompile(`<(.*?)>`)
@@ -41,6 +43,7 @@ func RenderPrompt(prompt parser.Prompt) {
 			}
 			huh.NewSelect[string]().Title(variable.Question).Options(options...).Value(&currentAnswer).Run()
 			answers = append(answers, answer{variable.Match, currentAnswer})
+			currentAnswer = ""
 
 		case parser.MultiSelectField:
 			re := regexp.MustCompile(`<(.*?)>`)
@@ -53,6 +56,7 @@ func RenderPrompt(prompt parser.Prompt) {
 			var selected []string
 			huh.NewMultiSelect[string]().Title(variable.Question).Options(options...).Value(&selected).Run()
 			answers = append(answers, answer{variable.Match, strings.Join(selected, ",")})
+			currentAnswer = ""
 		}
 	}
 
