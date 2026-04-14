@@ -1,5 +1,5 @@
 build:
-  go build -o dist/dyp ./cmd/dyp
+  go build -o dist/dyp main.go  
 
 run:
-  go run ./cmd/dyp
+  go run main.go
