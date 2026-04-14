@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"log"
 	"path"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/sachin-sankar/dyp/internal/core"
 	utils "github.com/sachin-sankar/dyp/internal/lib"
@@ -16,7 +17,7 @@ var renderCmd = &cobra.Command{
 	Short: "Render a prompt from filename directly.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
-			log.Fatalln("Invalid arguments to render command. Command accepts only the prompt filename.")
+			log.Fatal().Msgf("Too many arguments to render command. Expects prompt file name only.")
 		}
 
 		promptFile := args[0]

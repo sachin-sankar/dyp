@@ -1,11 +1,11 @@
 package parser
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/adrg/frontmatter"
 )
@@ -38,14 +38,13 @@ const (
 func ParsePromptFile(promptFilePath string) Prompt {
 	data, err := os.ReadFile(promptFilePath)
 	if err != nil {
-		log.Fatal("Unable to read file " + promptFilePath)
+		log.Fatal().Err(err).Msgf("Unable to read prompt file at path %s", promptFilePath)
 	}
 	var metadata Metadata
 	bodyBytes, parseErr := frontmatter.MustParse(strings.NewReader(string(data)), &metadata)
-	fmt.Printf("metadata: %v\n", metadata)
 	body := string(bodyBytes)
 	if parseErr != nil {
-		log.Fatal("Invalid Prompt file " + parseErr.Error())
+		log.Fatal().Msgf("Unable to parse frontmatter for prompt file  at %s", promptFilePath)
 	}
 	var vars []Var
 	re := regexp.MustCompile(`\{\{(.+?)\}\}`)
@@ -65,7 +64,7 @@ func ParsePromptFile(promptFilePath string) Prompt {
 			varType = InputField
 
 		default:
-			log.Fatal("Invalid field type while parsing prompt file " + promptFilePath + " " + match[1])
+			log.Fatal().Msgf("Error while parsing prompt file %s. Field '%s' is undefined", promptFilePath, typeString)
 		}
 		matchedVar := Var{varParts[0], varType, match[1]}
 		vars = append(vars, matchedVar)

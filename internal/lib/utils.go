@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"log"
 	"os"
 	"path"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/sachin-sankar/dyp/internal/parser"
 )
@@ -12,7 +13,7 @@ func ListPromptFiles() []string {
 	promptsLocation := GetPromptsDirectory()
 	promptFiles, readError := os.ReadDir(promptsLocation)
 	if readError != nil {
-		log.Fatal("Unable to read .prompts directory")
+		log.Fatal().Err(readError).Msgf("Unable to read .prompts directory.")
 	}
 	var resultPromptFiles []string
 	for _, promptFile := range promptFiles {
@@ -35,7 +36,7 @@ func GetPromptsDirectory() string {
 
 	home, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatal("Unable to find user HOME directory")
+		log.Fatal().Err(err).Msgf("Unable to read user's $HOME directory.")
 	}
 	promptsLocation := path.Join(home, ".prompts")
 	return promptsLocation
