@@ -4,6 +4,8 @@ import (
 	"os"
 
 	huh "charm.land/huh/v2"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/sachin-sankar/dyp/internal/core"
 	utils "github.com/sachin-sankar/dyp/internal/lib"
 	"github.com/spf13/cobra"
@@ -26,6 +28,19 @@ var rootCmd = &cobra.Command{
 
 		core.RenderPrompt(choosenPrompt)
 	},
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		verbose, err := cmd.PersistentFlags().GetBool("verbose")
+		if err != nil {
+			log.Fatal().Err(err).Msgf("Error running root command")
+		}
+		if verbose {
+			zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		}
+	},
+}
+
+func init() {
+	rootCmd.PersistentFlags().Bool("verbose", false, "Run dyp in verbose mode to observe debug logs.")
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

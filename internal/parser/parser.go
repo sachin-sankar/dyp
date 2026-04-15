@@ -15,9 +15,10 @@ type Metadata struct {
 }
 
 type Prompt struct {
-	Title string
-	Vars  []Var
-	Body  string
+	Title    string
+	Vars     []Var
+	Body     string
+	FilePath string
 }
 
 type Var struct {
@@ -69,6 +70,6 @@ func ParsePromptFile(promptFilePath string) Prompt {
 		matchedVar := Var{varParts[0], varType, match[1]}
 		vars = append(vars, matchedVar)
 	}
-	prompt := Prompt{metadata.Title, vars, body}
+	prompt := Prompt{metadata.Title, vars, body, promptFilePath}
 	return prompt
 }

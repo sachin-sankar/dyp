@@ -27,7 +27,18 @@ func ListPrompts() []parser.Prompt {
 
 	for _, promptFile := range ListPromptFiles() {
 		filePrompt := parser.ParsePromptFile(promptFile)
-		result = append(result, filePrompt)
+		if len(result) != 0 {
+			for _, prompt := range result {
+				log.Debug().Msgf("Compare prompt file titles: %s@%s | %s@%s", prompt.Title, prompt.FilePath, filePrompt.Title, filePrompt.FilePath)
+				if prompt.Title == filePrompt.Title {
+					log.Fatal().Str("Conflicting title", prompt.Title).Str("Conflicting Path A", prompt.FilePath).Str("Conflicting Path B", filePrompt.FilePath).Msgf("Duplicate prompt file with the same title found.")
+				} else {
+					result = append(result, filePrompt)
+				}
+			}
+		} else {
+			result = append(result, filePrompt)
+		}
 	}
 
 	return result
