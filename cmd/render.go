@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/sachin-sankar/dyp/internal/core"
+	utils "github.com/sachin-sankar/dyp/internal/lib"
 	"github.com/sachin-sankar/dyp/internal/parser"
 	"github.com/spf13/cobra"
 )
@@ -18,13 +19,17 @@ var renderCmd = &cobra.Command{
 		if len(args) != 1 {
 			log.Fatal().Msgf("Too many arguments to render command. Expects prompt file name only.")
 		}
-		promtpsDir, err := cmd.PersistentFlags().GetString("promtps")
+		promptsDir, err := cmd.Flags().GetString("prompts")
+		if promptsDir == "$HOME/.prompts" {
+			promptsDir = utils.GetDefaultPromptsDirectory()
+		}
+		log.Debug().Msgf("Prompts directory location: %s", promptsDir)
 		if err != nil {
 			log.Fatal().Err(err).Msgf("Error running render command.")
 		}
 
 		promptFile := args[0]
-		prompt := parser.ParsePromptFile(path.Join(promtpsDir, promptFile))
+		prompt := parser.ParsePromptFile(path.Join(promptsDir, promptFile))
 		core.RenderPrompt(prompt)
 	},
 }
