@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-default:
+defaults:
   working-directory: ./docs-website
 
 on:
