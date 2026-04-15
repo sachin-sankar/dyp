@@ -1,7 +1,8 @@
 name: Deploy to GitHub Pages
 
 defaults:
-  working-directory: ./docs-website
+  run:
+    working-directory: ./docs-website
 
 on:
   push:
