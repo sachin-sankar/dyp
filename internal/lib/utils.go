@@ -9,11 +9,10 @@ import (
 	"github.com/sachin-sankar/dyp/internal/parser"
 )
 
-func ListPromptFiles() []string {
-	promptsLocation := GetPromptsDirectory()
+func ListPromptFiles(promptsLocation string) []string {
 	promptFiles, readError := os.ReadDir(promptsLocation)
 	if readError != nil {
-		log.Fatal().Err(readError).Msgf("Unable to read .prompts directory.")
+		log.Fatal().Err(readError).Msgf("Unable to read Prompts directory %s.", promptsLocation)
 	}
 	var resultPromptFiles []string
 	for _, promptFile := range promptFiles {
@@ -22,10 +21,10 @@ func ListPromptFiles() []string {
 	return resultPromptFiles
 }
 
-func ListPrompts() []parser.Prompt {
+func ListPrompts(promptsLocation string) []parser.Prompt {
 	var result []parser.Prompt
 
-	for _, promptFile := range ListPromptFiles() {
+	for _, promptFile := range ListPromptFiles(promptsLocation) {
 		filePrompt := parser.ParsePromptFile(promptFile)
 		if len(result) != 0 {
 			for _, prompt := range result {
@@ -43,7 +42,7 @@ func ListPrompts() []parser.Prompt {
 
 	return result
 }
-func GetPromptsDirectory() string {
+func GetDefaultPromptsDirectory() string {
 
 	home, err := os.UserHomeDir()
 	if err != nil {
