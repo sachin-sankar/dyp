@@ -10,10 +10,7 @@ import (
 )
 
 func ListPromptFiles(promptsLocation string) []string {
-	if promptsLocation == "$HOME/.prompts" {
-		promptsLocation = GetDefaultPromptsDirectory()
-		log.Debug().Msg("Using Default Prompts directory")
-	}
+	promptsLocation = PromptDirectory(promptsLocation)
 	log.Debug().Msgf("Prompts directory location: %s", promptsLocation)
 	promptFiles, readError := os.ReadDir(promptsLocation)
 	if readError != nil {
@@ -30,6 +27,7 @@ func ListPromptFiles(promptsLocation string) []string {
 func ListPrompts(promptsLocation string) []parser.Prompt {
 	var result []parser.Prompt
 	var titles []string
+	promptsLocation = PromptDirectory(promptsLocation)
 
 	for _, promptFile := range ListPromptFiles(promptsLocation) {
 		filePrompt := parser.ParsePromptFile(promptFile)
@@ -44,12 +42,20 @@ func ListPrompts(promptsLocation string) []parser.Prompt {
 
 	return result
 }
-func GetDefaultPromptsDirectory() string {
 
+func GetDefaultPromptsDirectory() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Unable to read user's $HOME directory.")
 	}
 	promptsLocation := path.Join(home, ".prompts")
 	return promptsLocation
+}
+
+func PromptDirectory(buff string) string {
+	if buff == "$HOME/.prompts" {
+		buff = GetDefaultPromptsDirectory()
+		log.Debug().Msg("Using Default Prompts directory")
+	}
+	return buff
 }

@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -14,7 +13,7 @@ type answer struct {
 	answer   string
 }
 
-func RenderPrompt(prompt parser.Prompt) {
+func RenderPrompt(prompt parser.Prompt) string {
 	var answers []answer
 	var currentAnswer string
 
@@ -65,5 +64,5 @@ func RenderPrompt(prompt parser.Prompt) {
 		rendered = strings.Replace(rendered, "{{"+filledAnswer.question+"}}", filledAnswer.answer, 1)
 	}
 
-	fmt.Print(rendered)
+	return rendered
 }
