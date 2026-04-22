@@ -10,16 +10,15 @@ import (
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List available prompts.",
+	Use:     "list",
+	Aliases: []string{"l"},
+	Short:   "List available prompts.",
 	Run: func(cmd *cobra.Command, args []string) {
-		promtpsDir, err := cmd.Flags().GetString("prompts")
-		if promptsDir == "$HOME/.prompts" {
-			promptsDir = utils.GetDefaultPromptsDirectory()
-		}
-		log.Debug().Msgf("Prompts directory location: %s", promptsDir)
+		var promtpsDir string
+		var err error
+		promtpsDir, err = cmd.Flags().GetString("prompts")
 		if err != nil {
-			log.Fatal().Err(err).Msgf("Error running list command.")
+			log.Fatal().Err(err).Msg("Error running list command.")
 		}
 		prompts := utils.ListPrompts(promtpsDir)
 		table := table.New().Headers("Title", "File Path")

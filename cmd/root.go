@@ -17,10 +17,6 @@ var rootCmd = &cobra.Command{
 	Use:   "dyp",
 	Short: "Dynamically render prompts on the fly.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if promptsDir == "$HOME/.prompts" {
-			promptsDir = utils.GetDefaultPromptsDirectory()
-		}
-		log.Debug().Msgf("Prompts directory location: %s", promptsDir)
 		prompts := utils.ListPrompts(promptsDir)
 		var choosen int
 		var options []huh.Option[int]
@@ -36,12 +32,12 @@ var rootCmd = &cobra.Command{
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		verbose, err := cmd.Flags().GetBool("verbose")
 		if err != nil {
-			log.Fatal().Err(err).Msgf("Error running root command")
+			log.Fatal().Err(err).Msg("Error running root command")
 		}
 		var promtpsErr error
 		promptsDir, promtpsErr = cmd.Flags().GetString("prompts")
 		if err != nil {
-			log.Fatal().Err(promtpsErr).Msgf("Error running root command")
+			log.Fatal().Err(promtpsErr).Msg("Error running root command")
 		}
 		if verbose {
 			zerolog.SetGlobalLevel(zerolog.DebugLevel)

@@ -10,6 +10,11 @@ import (
 )
 
 func ListPromptFiles(promptsLocation string) []string {
+	if promptsLocation == "$HOME/.prompts" {
+		promptsLocation = GetDefaultPromptsDirectory()
+		log.Debug().Msg("Using Default Prompts directory")
+	}
+	log.Debug().Msgf("Prompts directory location: %s", promptsLocation)
 	promptFiles, readError := os.ReadDir(promptsLocation)
 	if readError != nil {
 		log.Fatal().Err(readError).Msgf("Unable to read Prompts directory %s.", promptsLocation)
@@ -30,7 +35,7 @@ func ListPrompts(promptsLocation string) []parser.Prompt {
 		filePrompt := parser.ParsePromptFile(promptFile)
 		for _, title := range titles {
 			if title == filePrompt.Title {
-				log.Fatal().Str("Conflicting title", title).Str("Conflicting Prompt File", promptFile).Msgf("Duplicate prompt file with the same title found.")
+				log.Fatal().Str("Conflicting title", title).Str("Conflicting Prompt File", promptFile).Msg("Duplicate prompt file with the same title found.")
 			}
 		}
 		titles = append(titles, filePrompt.Title)
@@ -43,7 +48,7 @@ func GetDefaultPromptsDirectory() string {
 
 	home, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatal().Err(err).Msgf("Unable to read user's $HOME directory.")
+		log.Fatal().Err(err).Msg("Unable to read user's $HOME directory.")
 	}
 	promptsLocation := path.Join(home, ".prompts")
 	return promptsLocation
