@@ -95,6 +95,58 @@ dyp render meeting-agenda.md --prompts /path/to/prompts
 
 ---
 
+### `dyp sink`
+
+Renders a prompt and sends it to an AI chat sink. Opens the rendered prompt in your default browser at the selected AI platform.
+
+```bash
+dyp sink <sink> [flags]
+```
+
+#### Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `<sink>` | The AI sink to send the prompt to (required). Supported: `chatgpt`, `perplexity`, `claude` |
+
+#### Flags
+
+| Flag | Short | Description | Default |
+|------|-------|-------------|---------|
+| `--prompt-file` | `-p` | Render a specific prompt file directly | Interactive selection |
+
+#### Examples
+
+```bash
+# Interactive prompt selection, then send to ChatGPT
+dyp sink chatgpt
+
+# Send to Perplexity
+dyp sink perplexity
+
+# Send to Claude
+dyp sink claude
+
+# Render a specific prompt file and send to ChatGPT
+dyp sink chatgpt --prompt-file business-proposal.md
+
+# Use custom prompts directory
+dyp sink perplexity --prompts /path/to/prompts
+
+# Send to multiple sinks at once
+dyp sink chatgpt perplexity claude
+```
+
+#### Supported Sinks
+
+| Sink | URL |
+|------|-----|
+| `chatgpt` | https://chatgpt.com |
+| `perplexity` | https://www.perplexity.ai |
+| `claude` | https://claude.ai |
+
+---
+
 ## Environment
 
 - `HOME` - Used to determine default prompts directory (`~/.prompts`)
