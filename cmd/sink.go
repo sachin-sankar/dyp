@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"net/url"
-	"os/exec"
 	"path"
 
 	"github.com/rs/zerolog/log"
@@ -21,16 +19,21 @@ var sinkCmd = &cobra.Command{
 	Aliases: []string{"s"},
 	Short:   "Render a prompt template to a sink.",
 	Long: `dyp allows you to render a commmand to a sink.
-	Supported sinks:
+	Supported web sinks:
 	- chatgpt
 	- perplexity
 	- claude
-You can pass in multiple sinks too :)
+	Supported terminal sinks:
+	- gemini
+	- opencode
+	- copilot
+You can pass in multiple web based sinks too :)
 Web sinks will be opened using xdg-open. 
 By default it will render a interactive list of available prompts to choose from. 
 If you need to render a prompt file directly use --prompt-file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		supportedSinks := []string{"chatgpt", "perplexity", "claude"}
+		supportedWebSinks := []string{"chatgpt", "perplexity", "claude"}
+		supportedCmdSinks := []string{"opencode", "gemini", "copilot"}
 		var (
 			promptsDir string
 			err        error
@@ -42,11 +45,24 @@ If you need to render a prompt file directly use --prompt-file`,
 		if len(args) < 1 {
 			log.Fatal().Msg("Atleast one sink has to be defined.")
 		}
+		teminalCmd := false
 		for _, arg := range args {
 			found := false
-			for _, sink := range supportedSinks {
+			for _, sink := range supportedWebSinks {
 				if arg == sink {
 					found = true
+					break
+				}
+			}
+			for _, sink := range supportedCmdSinks {
+				if arg == sink {
+					if teminalCmd {
+						log.Fatal().Msg("Chaining multiple terminal based sinks is unsupported.")
+					}
+					found = true
+					teminalCmd = true
+					log.Debug().Str("sinkname", sink).Msg("Found a terminal sink.")
+					break
 				}
 			}
 			if !found {
@@ -60,13 +76,15 @@ If you need to render a prompt file directly use --prompt-file`,
 			choosenPrompt = parser.ParsePromptFile(path.Join(utils.PromptDirectory(promptsDir), promptFile))
 		}
 		rendered := core.RenderPrompt(choosenPrompt)
-		baseURLMap := map[string]string{"chatgpt": "https://chatgpt.com/?hints=search&q=", "perplexity": "https://www.perplexity.ai/search/?q=", "claude": "https://claude.ai/new?q="}
-
-		for _, sink := range args {
-			finalURL := baseURLMap[sink] + url.QueryEscape(rendered)
-			cmd := exec.Command("xdg-open", finalURL)
-			cmd.Start()
+		for _, arg := range args {
+			for _, sink := range supportedWebSinks {
+				if arg == sink {
+					core.WebSink(arg, rendered)
+					continue
+				}
+			}
 		}
+		core.TerminalSink(args[0], rendered)
 	},
 }
 
@@ -74,5 +92,4 @@ func init() {
 	rootCmd.AddCommand(sinkCmd)
 
 	sinkCmd.Flags().StringVarP(&promptFile, "prompt-file", "p", "", "Render a prompt file directly.")
-
 }
