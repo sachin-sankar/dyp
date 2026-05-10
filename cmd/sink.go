@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"net/url"
-	"os/exec"
 	"path"
 
 	"github.com/rs/zerolog/log"
@@ -30,7 +28,7 @@ Web sinks will be opened using xdg-open.
 By default it will render a interactive list of available prompts to choose from. 
 If you need to render a prompt file directly use --prompt-file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		supportedSinks := []string{"chatgpt", "perplexity", "claude"}
+		supportedWebSinks := []string{"chatgpt", "perplexity", "claude"}
 		var (
 			promptsDir string
 			err        error
@@ -44,7 +42,7 @@ If you need to render a prompt file directly use --prompt-file`,
 		}
 		for _, arg := range args {
 			found := false
-			for _, sink := range supportedSinks {
+			for _, sink := range supportedWebSinks {
 				if arg == sink {
 					found = true
 				}
@@ -60,12 +58,13 @@ If you need to render a prompt file directly use --prompt-file`,
 			choosenPrompt = parser.ParsePromptFile(path.Join(utils.PromptDirectory(promptsDir), promptFile))
 		}
 		rendered := core.RenderPrompt(choosenPrompt)
-		baseURLMap := map[string]string{"chatgpt": "https://chatgpt.com/?hints=search&q=", "perplexity": "https://www.perplexity.ai/search/?q=", "claude": "https://claude.ai/new?q="}
-
-		for _, sink := range args {
-			finalURL := baseURLMap[sink] + url.QueryEscape(rendered)
-			cmd := exec.Command("xdg-open", finalURL)
-			cmd.Start()
+		for _, arg := range args {
+			for _, sink := range supportedWebSinks {
+				if arg == sink {
+					core.WebSink(arg, rendered)
+					continue
+				}
+			}
 		}
 	},
 }
@@ -74,5 +73,4 @@ func init() {
 	rootCmd.AddCommand(sinkCmd)
 
 	sinkCmd.Flags().StringVarP(&promptFile, "prompt-file", "p", "", "Render a prompt file directly.")
-
 }
