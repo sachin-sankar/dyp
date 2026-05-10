@@ -107,7 +107,7 @@ dyp sink <sink> [flags]
 
 | Argument | Description |
 |----------|-------------|
-| `<sink>` | The AI sink to send the prompt to (required). Supported: `chatgpt`, `perplexity`, `claude` |
+| `<sink>` | The AI sink to send the prompt to (required). Supported sinks are listed below. |
 
 #### Flags
 
@@ -137,14 +137,20 @@ dyp sink perplexity --prompts /path/to/prompts
 dyp sink chatgpt perplexity claude
 ```
 
-#### Supported Sinks
-
+#### Supported Web based Sinks
 | Sink | URL |
 |------|-----|
 | `chatgpt` | https://chatgpt.com |
 | `perplexity` | https://www.perplexity.ai |
 | `claude` | https://claude.ai |
 
+
+#### Supported Terminal based Sinks
+| Sink | Command |
+|------|-----|
+| `opencode` | opencode --prompt |
+| `gemini` | gemini -i |
+| `copilot` | copilot -i |
 ---
 
 ## Environment
