@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"charm.land/huh/v2"
+	"github.com/rs/zerolog/log"
 	"github.com/sachin-sankar/dyp/internal/parser"
 )
 
@@ -21,14 +22,20 @@ func RenderPrompt(prompt parser.Prompt) string {
 		switch variable.VarType {
 
 		case parser.TextField:
-			huh.NewText().
+			err := huh.NewText().
 				Title(variable.Question).
 				Value(&currentAnswer).Run()
+			if err != nil && err.Error() == "user aborted" {
+				log.Fatal().Msg("Keyboard Interrupt.")
+			}
 			answers = append(answers, answer{variable.Match, currentAnswer})
 			currentAnswer = ""
 
 		case parser.InputField:
-			huh.NewInput().Title(variable.Question).Value(&currentAnswer).Run()
+			err := huh.NewInput().Title(variable.Question).Value(&currentAnswer).Run()
+			if err != nil && err.Error() == "user aborted" {
+				log.Fatal().Msg("Keyboard Interrupt.")
+			}
 			answers = append(answers, answer{variable.Match, currentAnswer})
 			currentAnswer = ""
 
@@ -40,7 +47,10 @@ func RenderPrompt(prompt parser.Prompt) string {
 			for _, optionString := range optionStrings {
 				options = append(options, huh.NewOption(optionString, optionString))
 			}
-			huh.NewSelect[string]().Title(variable.Question).Options(options...).Value(&currentAnswer).Run()
+			err := huh.NewSelect[string]().Title(variable.Question).Options(options...).Value(&currentAnswer).Run()
+			if err != nil && err.Error() == "user aborted" {
+				log.Fatal().Msg("Keyboard Interrupt.")
+			}
 			answers = append(answers, answer{variable.Match, currentAnswer})
 			currentAnswer = ""
 
@@ -53,7 +63,10 @@ func RenderPrompt(prompt parser.Prompt) string {
 				options = append(options, huh.NewOption(optionString, optionString))
 			}
 			var selected []string
-			huh.NewMultiSelect[string]().Title(variable.Question).Options(options...).Value(&selected).Run()
+			err := huh.NewMultiSelect[string]().Title(variable.Question).Options(options...).Value(&selected).Run()
+			if err != nil && err.Error() == "user aborted" {
+				log.Fatal().Msg("Keyboard Interrupt.")
+			}
 			answers = append(answers, answer{variable.Match, strings.Join(selected, ",")})
 			currentAnswer = ""
 		}
