@@ -19,16 +19,21 @@ var sinkCmd = &cobra.Command{
 	Aliases: []string{"s"},
 	Short:   "Render a prompt template to a sink.",
 	Long: `dyp allows you to render a commmand to a sink.
-	Supported sinks:
+	Supported web sinks:
 	- chatgpt
 	- perplexity
 	- claude
-You can pass in multiple sinks too :)
+	Supported terminal sinks:
+	- gemini
+	- opencode
+	- copilot
+You can pass in multiple web based sinks too :)
 Web sinks will be opened using xdg-open. 
 By default it will render a interactive list of available prompts to choose from. 
 If you need to render a prompt file directly use --prompt-file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		supportedWebSinks := []string{"chatgpt", "perplexity", "claude"}
+		supportedCmdSinks := []string{"opencode", "gemini", "copilot"}
 		var (
 			promptsDir string
 			err        error
@@ -40,11 +45,24 @@ If you need to render a prompt file directly use --prompt-file`,
 		if len(args) < 1 {
 			log.Fatal().Msg("Atleast one sink has to be defined.")
 		}
+		teminalCmd := false
 		for _, arg := range args {
 			found := false
 			for _, sink := range supportedWebSinks {
 				if arg == sink {
 					found = true
+					break
+				}
+			}
+			for _, sink := range supportedCmdSinks {
+				if arg == sink {
+					if teminalCmd {
+						log.Fatal().Msg("Chaining multiple terminal based sinks is unsupported.")
+					}
+					found = true
+					teminalCmd = true
+					log.Debug().Str("sinkname", sink).Msg("Found a terminal sink.")
+					break
 				}
 			}
 			if !found {
@@ -66,6 +84,7 @@ If you need to render a prompt file directly use --prompt-file`,
 				}
 			}
 		}
+		core.TerminalSink(args[0], rendered)
 	},
 }
 
